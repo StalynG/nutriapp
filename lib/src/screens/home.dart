@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/diet_model.dart'; // IMPORTANTE: Esta línea conecta con el paso 1
+import '../../models/diet_model.dart'; // IMPORTANTE: Esta línea conecta con el paso 1
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
