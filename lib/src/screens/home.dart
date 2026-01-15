@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xff1D1617).withOpacity(0.11),
+                  color: const Color(0xff1D1617).withValues(alpha: 0.11),
                   blurRadius: 40,
                   spreadRadius: 0.0,
                 )
@@ -146,8 +146,8 @@ class _HomePageState extends State<HomePage> {
                   width: 210,
                   decoration: BoxDecoration(
                     color: diets[index].viewIsSelected
-                        ? const Color(0xff9DCEFF).withOpacity(0.3)
-                        : Colors.pink.withOpacity(0.1), // Colores alternados simples
+                        ? const Color(0xff9DCEFF).withValues(alpha: 0.3)
+                        : Colors.pink.withValues(alpha: 0.1), // Colores alternados simples
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
