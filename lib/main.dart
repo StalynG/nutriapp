@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'domain/repositories/ai_repository_impl.dart';
+import 'infrastructure/repositories/nutrition_catalog_repository_impl.dart';
 import 'infrastructure/services/openai_service.dart';
 import 'providers/ai_provider.dart';
+import 'providers/nutrition_catalog_provider.dart';
 import 'src/screens/ai_chat_screen.dart';
+import 'src/screens/nutrition_catalog_screen.dart';
 
 Future<void> main() async {
   await dotenv.load();
-  runApp(const MyApp());
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(prefs: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences prefs;
+
+  const MyApp({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +40,15 @@ class MyApp extends StatelessWidget {
               AiProvider(context.read<AiRepositoryImpl>()),
           update: (context, aiRepository, previous) =>
               AiProvider(aiRepository),
+        ),
+        Provider(
+          create: (_) => NutritionCatalogRepositoryImpl(prefs),
+        ),
+        ChangeNotifierProxyProvider<NutritionCatalogRepositoryImpl, NutritionCatalogProvider>(
+          create: (context) =>
+              NutritionCatalogProvider(context.read<NutritionCatalogRepositoryImpl>()),
+          update: (context, repository, previous) =>
+              NutritionCatalogProvider(repository),
         ),
       ],
       child: MaterialApp(
@@ -62,15 +78,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final titles = ['Inicio', 'Chat Nutricional', 'Catálogo'];
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Inicio' : 'Chat Nutricional'),
+        title: Text(titles[_selectedIndex]),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
-      body: _selectedIndex == 0 ? _buildHome() : const AiChatScreen(),
+      body: _buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -87,9 +105,26 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.chat),
             label: 'Chat IA',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant),
+            label: 'Catálogo',
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildHome();
+      case 1:
+        return const AiChatScreen();
+      case 2:
+        return const NutritionCatalogScreen();
+      default:
+        return _buildHome();
+    }
   }
 
   Widget _buildHome() {
@@ -165,21 +200,51 @@ class _MyHomePageState extends State<MyHomePage> {
               description:
                   'Recibe consejos nutricionales basados en tus análisis',
             ),
+            const SizedBox(height: 12),
+            _buildFeatureCard(
+              icon: Icons.restaurant,
+              title: 'Catálogo Nutricional',
+              description:
+                  'Explora nuestra base de datos de alimentos con información nutricional completa',
+            ),
             const SizedBox(height: 32),
-            // Call to action
-            ElevatedButton.icon(
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-              icon: const Icon(Icons.chat),
-              label: const Text('Ir al Chat'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
-              ),
+            // Call to action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 1;
+                      });
+                    },
+                    icon: const Icon(Icons.chat),
+                    label: const Text('Chat IA'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                    icon: const Icon(Icons.restaurant),
+                    label: const Text('Catálogo'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.amber[700],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             // Info
