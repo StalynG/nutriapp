@@ -224,3 +224,4 @@ class NutritionalInfoScreen extends StatelessWidget {
     );
   }
 }
+
