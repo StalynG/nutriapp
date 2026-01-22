@@ -90,3 +90,4 @@ class FoodAnalysis {
     'ingredientes': ingredientes,
   };
 }
+//////////////////////
