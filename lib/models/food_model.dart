@@ -3,7 +3,7 @@ class Food {
   String name;
   String description;
   String category;
-  String? imagePath; // Puede ser una URL o una ruta local
+  String? imagePath;
 
   Food({
     required this.id,
@@ -12,9 +12,20 @@ class Food {
     required this.category,
     this.imagePath,
   });
+
+  // AÑADIDO: Para convertir la respuesta de la API/Historial a objeto Food
+  factory Food.fromJson(Map<String, dynamic> json) {
+    return Food(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      category: json['category'] ?? '',
+      imagePath: json['imagePath'],
+    );
+  }
 }
 
-// Datos de prueba (Simulando una base de datos)
+// Tus datos de prueba se mantienen igual
 List<Food> dummyFoods = [
   Food(
     id: '1',
