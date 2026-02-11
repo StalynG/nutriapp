@@ -1,56 +1,116 @@
 import 'dart:typed_data';
 
-/// Servicio de procesamiento de imágenes.
-/// Capa intermedia de transformación visual.
+/// Servicio centralizado para el procesamiento y optimización de imágenes.
+/// ART10 – Optimización final del preprocesamiento de imagen.
 class ImageProcessingService {
   ImageProcessingService();
 
-  /// Aplica un filtro de escala de grises sobre una imagen.
-  Future<Uint8List> applyGrayScale(Uint8List imageBytes) async {
-    await Future.delayed(const Duration(milliseconds: 250));
-    return imageBytes;
-  }
+  /* ======================================================
+   * VALIDACIÓN DE CARGA
+   * ====================================================== */
 
-  /// Aplica un suavizado básico (blur).
-  Future<Uint8List> applyBlur(Uint8List imageBytes) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return imageBytes;
-  }
-
-  /// Realiza detección de bordes.
-  Future<Uint8List> detectEdges(Uint8List imageBytes) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return imageBytes;
-  }
-}
-
-/// Tipos de filtros soportados por el servicio de procesamiento.
-enum ImageFilterType { grayscale, blur, edgeDetection }
-
-/// Pipeline de procesamiento encadenado.
-class ImageProcessingPipeline {
-  final ImageProcessingService _service = ImageProcessingService();
-
-  Future<Uint8List> process(
-    Uint8List imageBytes,
-    List<ImageFilterType> filters,
-  ) async {
-    Uint8List result = imageBytes;
-
-    for (final filter in filters) {
-      switch (filter) {
-        case ImageFilterType.grayscale:
-          result = await _service.applyGrayScale(result);
-          break;
-        case ImageFilterType.blur:
-          result = await _service.applyBlur(result);
-          break;
-        case ImageFilterType.edgeDetection:
-          result = await _service.detectEdges(result);
-          break;
-      }
+  /// Verifica que la imagen cargada sea válida.
+  bool validateImageLoad(Uint8List imageBytes) {
+    if (imageBytes.isEmpty) {
+      throw Exception('Imagen inválida: sin datos');
     }
 
-    return result;
+    if (imageBytes.length < 100) {
+      throw Exception('Imagen inválida: tamaño insuficiente');
+    }
+
+    return true;
+  }
+
+  /* ======================================================
+   * NORMALIZACIÓN DE DATOS
+   * ====================================================== */
+
+  /// Normaliza los valores de la imagen para su procesamiento.
+  Uint8List normalizeImage(Uint8List imageBytes) {
+    // TODO: implementar normalización real de rango dinámico
+    return imageBytes;
+  }
+
+  /* ======================================================
+   * VECTORIZACIÓN
+   * ====================================================== */
+
+  /// Convierte la imagen a una representación vectorizada.
+  Uint8List vectorizeImage(Uint8List imageBytes) {
+    // TODO: vectorizar matriz de píxeles para optimización SIMD
+    return imageBytes;
+  }
+
+  /* ======================================================
+   * REDUCCIÓN DE RUIDO
+   * ====================================================== */
+
+  /// Aplica reducción de ruido configurable.
+  Future<Uint8List> reduceNoise(
+    Uint8List imageBytes, {
+    int intensity = 1,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 120));
+    // TODO: usar intensity en algoritmo de filtrado
+    return imageBytes;
+  }
+
+  /* ======================================================
+   * OPTIMIZACIÓN DE PIPELINE
+   * ====================================================== */
+
+  /// Optimiza el pipeline interno de procesamiento.
+  Future<Uint8List> optimizePipeline(Uint8List imageBytes) async {
+    await Future.delayed(const Duration(milliseconds: 150));
+
+    // FIX: devolver la imagen recibida hasta que exista un pipeline real
+    return imageBytes;
+  }
+
+  /* ======================================================
+   * COMPRESIÓN
+   * ====================================================== */
+
+  /// Compresión básica simulada.
+  Future<Uint8List> compressImage(Uint8List imageBytes) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return imageBytes;
+  }
+
+  /// Compresión avanzada (stub temporal)
+  Future<Uint8List> compressImageAdvanced(
+    Uint8List imageBytes,
+    int quality,
+  ) async {
+    // TODO: implementar algoritmo real de compresión avanzada
+    return imageBytes;
+  }
+
+  /* ======================================================
+   * ART10 – OPTIMIZACIÓN FINAL
+   * ====================================================== */
+
+  /// Ejecuta el flujo completo de optimización final del preprocesamiento.
+  Future<Uint8List> optimizeFinalPreprocessing(Uint8List imageBytes) async {
+    // Validación de carga
+    validateImageLoad(imageBytes);
+
+    // Normalización
+    var processedImage = normalizeImage(imageBytes);
+
+    // Vectorización
+    processedImage = vectorizeImage(processedImage);
+
+    // Reducción de ruido
+    processedImage = await reduceNoise(processedImage, intensity: 2);
+
+    // Optimización del pipeline
+    processedImage = await optimizePipeline(processedImage);
+
+    // Compresión básica temporal
+    processedImage = await compressImage(processedImage);
+
+    return processedImage;
   }
 }
