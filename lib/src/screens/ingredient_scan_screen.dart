@@ -377,9 +377,134 @@ class _IngredientScanScreenState extends State<IngredientScanScreen>
                       ))
                   .toList(),
             ),
+            const SizedBox(height: 12),
+            // Nutritional information section
+            FutureBuilder<dynamic>(
+              future: scanProvider.getNutritionalResult(scan.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasData && snapshot.data != null) {
+                  final nutritionResult = snapshot.data;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Análisis Nutricional',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildNutrientInfo(
+                            label: 'Calorías',
+                            value: nutritionResult.formattedCalories,
+                            color: Colors.orange,
+                          ),
+                          _buildNutrientInfo(
+                            label: 'Proteína',
+                            value: nutritionResult.formattedProtein,
+                            color: Colors.red,
+                          ),
+                          _buildNutrientInfo(
+                            label: 'Grasa',
+                            value: nutritionResult.formattedFat,
+                            color: Colors.yellow,
+                          ),
+                          _buildNutrientInfo(
+                            label: 'Carbos',
+                            value: nutritionResult.formattedCarbs,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (!nutritionResult.validateNutritionalData())
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.warning, size: 16, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text(
+                                'Validación: Datos inconsistentes',
+                                style: TextStyle(fontSize: 10, color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.check_circle, size: 16, color: Colors.green),
+                              SizedBox(width: 8),
+                              Text(
+                                'Validación: Datos correctos',
+                                style: TextStyle(fontSize: 10, color: Colors.green),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                }
+
+                return const SizedBox.shrink();
+              },
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNutrientInfo({
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: Colors.grey),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 
